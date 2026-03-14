@@ -1,463 +1,217 @@
-/* Основные переменные для легкой настройки цветов */
-:root {
-    --bg-dark: #050505;
-    --accent-gradient: linear-gradient(135deg, #6e56cf 0%, #ad7bff 100%);
-    --secondary-btn-bg: rgba(255, 255, 255, 0.05);
-    --border-soft: rgba(255, 255, 255, 0.1);
-    --text-primary: #ffffff;
-    --text-muted: #888888;
-}
-
 body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
     margin: 0;
-    padding: 0;
-    background-color: var(--bg-dark);
-    color: var(--text-primary);
-    font-family: 'Inter', -apple-system, sans-serif;
-    -webkit-font-smoothing: antialiased;
 }
 
-/* Навигация (Header) */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24px 80px;
-}
+.container { display: flex; height: 100vh; }
 
-.logo {
-    font-weight: 800;
-    font-size: 1.1rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-}
-
-/* Контентная часть (Hero) */
-.hero-container {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 40px;
-    max-width: 1200px;
-    margin: 100px auto;
-    padding: 0 40px;
-    align-items: center;
-}
-
-.hero-text h1 {
-    font-size: 4rem; /* Крупный жирный шрифт как на скрине */
-    line-height: 1.1;
-    font-weight: 700;
-    margin-bottom: 24px;
-    letter-spacing: -0.02em;
-}
-
-.hero-text p {
-    font-size: 1.25rem;
-    color: var(--text-muted);
-    margin-bottom: 48px;
-    max-width: 450px;
-}
-
-/* Кнопки */
-.button-group {
-    display: flex;
-    gap: 16px;
-}
-
-.btn {
-    padding: 14px 32px;
-    border-radius: 8px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: transform 0.2s, filter 0.2s;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-}
-
-.btn-primary {
-    background: var(--accent-gradient);
-    color: white;
-}
-
-.btn-secondary {
-    background: var(--secondary-btn-bg);
-    border: 1px solid var(--border-soft);
-    color: white;
-}
-
-/* Визуальный блок (имитация UI) */
-.hero-ui-mockup {
-    position: relative;
-}
-
-.ui-card {
-    background: #111111;
-    border: 1px solid var(--border-soft);
-    border-radius: 16px;
-    padding: 40px;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.8);
-}
-
-.ui-search-bar {
-    background: linear-gradient(90deg, #539dff, #8e44ad);
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-/* Адаптивность для мобилок */
-@media (max-width: 1024px) {
-    .hero-container {
-        grid-template-columns: 1fr;
-        text-align: center;
-        margin-top: 50px;
-    }
-    .hero-text h1 { font-size: 2.8rem; }
-    .hero-text p { margin: 0 auto 40px; }
-    .button-group { justify-content: center; }
-    .hero-ui-mockup { display: none; }
-}
-/* Вторая секция */
-.how-it-works {
-    padding: 120px 80px;
-    background-color: var(--bg-dark);
-}
-
-.content-wrapper {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    gap: 80px;
-}
-
-.label {
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.text-block h2 {
-    font-size: 3rem;
-    margin: 15px 0 25px 0;
-    background: linear-gradient(90deg, #fff 0%, #a1a1a1 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.text-block p {
-    font-size: 1.15rem;
-    line-height: 1.6;
-    color: #cccccc;
-    max-width: 500px;
-}
-
-/* Визуальные карточки справа */
-.visual-mockup {
-    position: relative;
-    flex: 1;
-    height: 400px;
-}
-
-.card {
-    background: #161616;
-    border: 1px solid var(--border-soft);
-    border-radius: 12px;
+/* Боковое меню */
+.sidebar {
+    width: 250px;
+    background: white;
     padding: 20px;
-    position: absolute;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    border-right: 1px solid #ddd;
 }
 
-.card-email {
-    width: 280px;
-    top: 50px;
-    left: 0;
-    z-index: 1;
+.sidebar ul { list-style: none; padding: 0; }
+.sidebar li {
+    padding: 12px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.3s;
 }
+.sidebar li:hover { background: #fce4ec; color: #d81b60; } /* Розовый при наведении */
 
-.card-ai-result {
-    width: 320px;
-    top: 20px;
-    left: 180px;
-    z-index: 2;
-    border: 1px solid #6e56cf;
-    background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
-}
-
-.ai-tag {
-    background: #6e56cf;
+/* Шапка */
+.top-bar {
+    background: #2962ff; /* Синий как в шаблоне */
     color: white;
-    width: fit-content;
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    margin-bottom: 10px;
-}
-
-.card-header { font-weight: bold; margin-bottom: 10px; }
-.card-body { color: var(--text-muted); font-size: 0.9rem; }
-.card-footer { color: #6e56cf; font-size: 0.8rem; margin-top: 15px; cursor: pointer; }
-
-.stats {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    font-size: 0.85rem;
-    color: #ad7bff;
-}
-
-/* Адаптив для второй секции */
-@media (max-width: 900px) {
-    .content-wrapper {
-        flex-direction: column;
-        text-align: center;
-    }
-    .visual-mockup {
-        display: none;
-    }
-    .text-block p {
-        margin: 0 auto;
-    }
-}
-/* Секция 3 и 4 общие настройки */
-.card-power, .companies-section {
-    padding: 140px 80px;
-    display: flex;
-    justify-content: center;
-}
-
-.container {
-    max-width: 1200px;
-    width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
-    gap: 100px;
-}
-
-/* Стили для динамической карточки */
-.dynamic-card {
-    width: 350px;
-    height: 200px;
-    background: #1a1a1a;
-    border: 1px solid #333;
-    border-radius: 20px;
-    padding: 24px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 20px 40px rgba(110, 86, 207, 0.2);
-}
-
-.rank-badge {
-    background: #ad7bff;
-    color: #fff;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: bold;
-}
-
-.growth-graph {
-    display: flex;
-    align-items: flex-end;
-    gap: 10px;
-    height: 80px;
-    margin-top: 30px;
-}
-
-.bar {
-    flex: 1;
-    background: var(--accent-gradient);
-    border-radius: 4px 4px 0 0;
-}
-
-/* Футер */
-footer {
-    border-top: 1px solid var(--border-soft);
-    padding: 80px;
-    background: #050505;
-}
-
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 15px 30px;
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
 }
 
-.footer-sidebar {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.team-name {
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #fff;
-}
-
-.contact-email {
-    color: var(--text-muted);
-}
-
-.contact-form h3 {
-    margin-bottom: 20px;
-}
-
-.input-group {
-    display: flex;
-    gap: 10px;
-}
-
-.input-group input {
-    background: #111;
-    border: 1px solid #333;
-    padding: 12px 20px;
-    border-radius: 8px;
-    color: #fff;
+#searchInput {
+    padding: 8px 15px;
+    border-radius: 20px;
+    border: none;
     width: 300px;
 }
 
-/* Адаптивность для футера и секций */
-@media (max-width: 900px) {
-    .container, .footer-container {
-        grid-template-columns: 1fr;
-        flex-direction: column;
-        text-align: center;
-        gap: 50px;
-    }
-    .input-group { flex-direction: column; }
-    .input-group input { width: 100%; box-sizing: border-box; }
-}
-:root {
-    --purple: #8a2be2;
-    --dark: #0a0a0a;
-    --gray: #1a1a1a;
+/* Карточки */
+.dashboard {
+    display: flex;
+    gap: 20px;
+    padding: 30px;
+    flex-wrap: wrap;
 }
 
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    width: 300px;
+}
+
+.todo-card { border-top: 5px solid #ff5252; }
+.swipes-card { border-top: 5px solid #69f0ae; } /* Зеленый */
+
+/* Кнопка Swipes */
+.start-swipe-btn {
+    background: #f8bbd0; /* Розовый старт */
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    width: 100%;
+    font-weight: bold;
+}
+
+/* To-do List стили */
+.todo-input-group { display: flex; gap: 5px; margin-bottom: 10px; }
+#todoItems li {
+    background: #f9f9f9;
+    margin-bottom: 5px;
+    padding: 8px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+/* Основные настройки */
 body {
-    background: var(--dark);
-    color: white;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fa;
     margin: 0;
+    color: #333;
 }
 
 .container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding-top: 50px;
+    min-height: 100vh;
 }
 
-/* Регистрация */
-.auth-box {
-    background: var(--gray);
-    padding: 30px;
-    border-radius: 20px;
-    width: 350px;
-    border: 1px solid #333;
+/* Боковая панель */
+.sidebar {
+    width: 260px;
+    background: white;
+    padding: 30px 20px;
+    border-right: 1px solid #e0e0e0;
 }
 
-.tabs {
-    display: flex;
-    border: 1px solid var(--purple);
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 40px;
+    color: #000;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar li {
+    padding: 12px 15px;
+    margin-bottom: 8px;
     border-radius: 10px;
-    margin-bottom: 25px;
-    overflow: hidden;
-}
-
-.tab-btn {
-    flex: 1;
-    padding: 12px;
-    background: none;
-    border: none;
-    color: white;
     cursor: pointer;
+    transition: all 0.2s;
 }
 
-.tab-btn.active { background: var(--purple); }
+.sidebar li:hover {
+    background-color: #fce4ec; /* Розовый фон при наведении */
+    color: #e91e63;
+}
 
-input {
-    width: 100%;
-    background: none;
-    border: none;
-    border-bottom: 1px solid var(--purple);
+/* Основной контент */
+.main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-bar {
+    background: #2962ff; /* Тот самый синий из макета */
+    padding: 15px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     color: white;
-    padding: 12px 0;
-    margin-bottom: 20px;
+}
+
+#searchInput {
+    width: 400px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    border: none;
     outline: none;
 }
 
-.main-btn {
-    width: 100%;
-    background: var(--purple);
+/* Сетка карточек */
+.dashboard {
+    padding: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+}
+
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+/* Стили для To-do */
+.todo-input-group {
+    display: flex;
+    margin-top: 15px;
+    gap: 10px;
+}
+
+#todoInput {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.todo-btn {
+    background: #ff5252;
+    color: white;
+    border: none;
+    padding: 5px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#todoItems {
+    margin-top: 20px;
+    padding: 0;
+}
+
+#todoItems li {
+    background: #fff5f5;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    border-left: 4px solid #ff5252;
+}
+
+/* Кнопка Swipe */
+.start-swipe-btn {
+    background: #f06292;
+    color: white;
     border: none;
     padding: 15px;
-    border-radius: 10px;
-    color: white;
+    width: 100%;
+    border-radius: 30px;
     font-weight: bold;
+    margin: 20px 0;
     cursor: pointer;
-}
-
-/* Личный кабинет */
-.profile-header {
-    width: 90%;
-    max-width: 800px;
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    margin-bottom: 40px;
-}
-
-.avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: linear-gradient(45deg, var(--purple), #4b0082);
-}
-
-/* Инста-сетка */
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    width: 90%;
-    max-width: 800px;
-}
-
-.add-card, .post-item {
-    aspect-ratio: 1/1;
-    background: #111;
-    border: 1px dashed var(--purple);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    overflow: hidden;
-}
-
-.post-item img { width: 100%; height: 100%; object-fit: cover; }
-
-/* Кейсы компаний */
-.cases-container {
-    width: 90%;
-    max-width: 800px;
-}
-
-.case-card {
-    background: #151515;
-    padding: 20px;
-    border-radius: 15px;
-    border-left: 4px solid var(--purple);
-    margin-bottom: 15px;
 }
