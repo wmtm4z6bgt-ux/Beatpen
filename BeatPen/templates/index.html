@@ -1,327 +1,57 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BeatPen — Find an internship</title>
-    <style>
-        :root {
-            --bg-color: #0a0a0a;
-            --text-main: #ffffff;
-            --text-secondary: #a1a1a1;
-            --accent-purple: #6e56cf;
-            --accent-hover: #7c66dc;
-            --border-color: rgba(255, 255, 255, 0.2);
-        }
-
-        body {
-            margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-color); color: var(--text-main);
-            line-height: 1.5; overflow-x: hidden;
-        }
-
-        /* Навигация */
-        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 60px; position: absolute; width: 100%; box-sizing: border-box; z-index: 10; }
-        .logo { font-size: 1.2rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
-
-        /* Экраны */
-        .screen { display: none; width: 100%; min-height: 100vh; }
-        .screen.active { display: block; }
-
-        /* Лендинг */
-        .hero { display: flex; align-items: center; justify-content: space-between; padding: 150px 60px 100px; max-width: 1200px; margin: 0 auto; }
-        .hero-content { max-width: 500px; }
-        h1 { font-size: 3.5rem; line-height: 1.1; margin-bottom: 24px; font-weight: 700; }
-        .btn { padding: 12px 28px; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: 0.2s; text-decoration: none; display: inline-block; border: none; }
-        .btn-primary { background-color: var(--accent-purple); color: white; }
-        .btn-secondary { background-color: transparent; color: white; border: 1px solid var(--border-color); margin-left: 10px; }
-
-        /* ОКНО РЕГИСТРАЦИИ */
-        #screen-auth { background: #000; display: none; align-items: center; justify-content: center; position: fixed; top: 0; left: 0; z-index: 100; }
-        #screen-auth.active { display: flex; }
-        .auth-card { background: #111; padding: 30px; border-radius: 20px; border: 1px solid #333; width: 380px; box-shadow: 0 0 40px rgba(110, 86, 207, 0.2); }
-        
-        .tabs { display: flex; margin-bottom: 25px; border-bottom: 1px solid #222; }
-        .tab { flex: 1; padding: 12px; background: none; border: none; color: #555; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .tab.active { color: #fff; border-bottom: 2px solid var(--accent-purple); }
-        
-        .auth-card input { width: 100%; background: transparent; border: none; border-bottom: 1px solid #333; color: white; padding: 12px 0; margin-bottom: 15px; outline: none; font-size: 14px; }
-        .auth-card input:focus { border-bottom-color: var(--accent-purple); }
-        
-        .age-row { display: flex; align-items: center; gap: 10px; margin: 15px 0; font-size: 14px; }
-        .age-btn { background: #1a1a1a; border: 1px solid #333; color: white; padding: 6px 15px; border-radius: 6px; cursor: pointer; }
-        .age-btn.selected { background: var(--accent-purple); border-color: var(--accent-purple); }
-
-        /* ПРИЛОЖЕНИЕ (Instagram Style) */
-        .app-container { max-width: 500px; margin: 0 auto; padding-bottom: 80px; }
-        .insta-header { padding: 30px 20px; border-bottom: 1px solid #222; text-align: center; }
-        .profile-pic { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); margin: 0 auto 15px; padding: 3px; }
-        .profile-pic div { width: 100%; height: 100%; background: #000; border-radius: 50%; }
-        
-        .insta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 10px; }
-        .grid-item { aspect-ratio: 1/1; background: #111; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #333; }
-        .grid-item img { width: 100%; height: 100%; object-fit: cover; }
-
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; max-width: 500px; left: 50%; transform: translateX(-50%); height: 70px; background: #000; border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
-        .nav-item { color: #fff; text-align: center; font-size: 10px; opacity: 0.5; cursor: pointer; }
-        .nav-item.active { opacity: 1; }
-        .nav-item img { display: block; margin: 0 auto 4px; width: 24px; filter: invert(1); }
-
-        .feed-card { border-bottom: 1px solid #111; padding-bottom: 20px; margin-bottom: 20px; }
-        .feed-user { padding: 12px; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 8px; }
-        .feed-avatar { width: 25px; height: 25px; border-radius: 50%; background: var(--accent-purple); }
-    </style>
+    <title>BeatPen - Student Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-
-    <div id="screen-landing" class="screen active">
-        <nav>
-            <div class="logo">BEATPEN</div>
-            <button class="btn btn-primary" onclick="openAuth()">Get Started</button>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo">BeatPen</div>
+            <ul>
+                <li onclick="showSection('swipes')">Your swipes</li>
+                <li onclick="showSection('messages')">Messages</li>
+                <li onclick="showSection('recommended')">BeatPen recommend</li>
+                <li onclick="showSection('assignments')">Your assignments</li>
+                <li onclick="showSection('support')">Support</li>
+                <li onclick="showSection('about')">About BeatPen</li>
+            </ul>
+            <div class="user-profile">Your profile</div>
         </nav>
-        <main class="hero">
-            <div class="hero-content">
-                <h1>Feel the beat. Lead the line. Find an internship.</h1>
-                <p>Find job without stressing. Download your portfolio, and start working now.</p>
-                <div class="cta-group">
-                    <button class="btn btn-primary" onclick="openAuth()">Get Started</button>
+
+        <main class="main-content">
+            <header class="top-bar">
+                <input type="text" id="searchInput" placeholder="Search...">
+                <div class="welcome-text">Welcome back, Student!</div>
+            </header>
+
+            <section class="dashboard">
+                <div class="card todo-card">
+                    <h3>Todo list <span>📌</span></h3>
+                    <div class="todo-input-group">
+                        <input type="text" id="todoInput" placeholder="Новая задача...">
+                        <button onclick="addTodo()">+</button>
+                    </div>
+                    <ul id="todoItems">
+                        </ul>
                 </div>
-            </div>
-            <div class="hero-visual">
-                <div style="background: #111; width: 350px; height: 220px; border-radius: 20px; border: 1px solid #333; padding: 25px;">
-                    <div style="background: linear-gradient(90deg, #4da3ff, #9d50bb); padding: 10px 20px; border-radius: 30px; font-size: 13px;">🔍 find my dream internship...</div>
+
+                <div class="card swipes-card">
+                    <h3>Swipes left this month <span>🧤</span></h3>
+                    <div class="swipe-count">18</div>
+                    <button class="start-swipe-btn">Start to swipe</button>
+                    <p>Start your job journey with BeatPen</p>
                 </div>
-            </div>
+
+                <div class="card about-card">
+                    <h3>About BeatPen</h3>
+                    <p>We are a platform dedicated to helping students kickstart their careers through jobs and internships...</p>
+                </div>
+            </section>
         </main>
     </div>
 
-    <div id="screen-auth" class="screen">
-        <div class="auth-card">
-            <div class="tabs">
-                <button id="t-student" class="tab active" onclick="setRole('student')">STUDENT</button>
-                <button id="t-company" class="tab" onclick="setRole('company')">COMPANY</button>
-            </div>
-            <div id="auth-form">
-                <input type="text" id="reg-name" placeholder="FULL NAME">
-                <input type="email" placeholder="EMAIL">
-                <input type="text" id="reg-extra" placeholder="PORTFOLIO LINK">
-                <div class="age-row" id="age-box">
-                    <span>Are you 18?</span>
-                    <button class="age-btn" onclick="selectAge(this)">Yes</button>
-                    <button class="age-btn" onclick="selectAge(this)">No</button>
-                </div>
-                <button class="btn btn-primary" style="width: 100%; margin-top: 10px;" onclick="completeReg()">GET STARTED</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="screen-app" class="screen">
-        <div class="app-container">
-            <div id="page-profile">
-                <div class="insta-header">
-                    <div class="profile-pic"><div></div></div>
-                    <h2 id="display-name" style="margin: 0; font-size: 20px;">Имя Фамилия</h2>
-                    <p id="display-status" style="color: #a1a1a1; font-size: 14px; margin: 5px 0 20px;">Student / Tech Talent</p>
-                    
-                    <input type="file" id="post-input" hidden onchange="addNewPost(event)">
-                    <button class="btn btn-primary" style="width: 100%;" onclick="document.getElementById('post-input').click()">+ Add Achievement</button>
-                </div>
-                <div class="insta-grid" id="profile-grid">
-                    <div class="grid-item">1</div><div class="grid-item">2</div><div class="grid-item">3</div>
-                </div>
-            </div>
-
-            <div id="page-feed" style="display: none;">
-                <div style="padding: 15px; text-align: center; font-weight: bold; border-bottom: 1px solid #222;">BEATPEN FEED</div>
-                <div id="feed-list" style="padding: 10px;">
-                    </div>
-            </div>
-
-            <nav class="bottom-nav">
-                <div class="nav-item" onclick="switchTab('page-feed', this)">
-                    <img src="https://img.icons8.com/material-outlined/24/home.png">Feed
-                </div>
-                <div class="nav-item active" onclick="switchTab('page-profile', this)">
-                    <img src="https://img.icons8.com/material-outlined/24/user-male-circle.png">Profile
-                </div>
-            </nav>
-        </div>
-    </div>
-
-    <script>
-        let currentRole = 'student';
-
-        // Открыть окно регистрации
-        function openAuth() {
-            document.getElementById('screen-auth').classList.add('active');
-        }
-
-        // Переключение Студент/Компания
-        function setRole(role) {
-            currentRole = role;
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('t-' + role).classList.add('active');
-            
-            const extra = document.getElementById('reg-extra');
-            const age = document.getElementById('age-box');
-            
-            if(role === 'company') {
-                extra.placeholder = "БИН КОМПАНИИ";
-                age.style.display = "none";
-            } else {
-                extra.placeholder = "PORTFOLIO LINK";
-                age.style.display = "flex";
-            }
-        }
-
-        // Выбор возраста
-        function selectAge(btn) {
-            btn.parentElement.querySelectorAll('.age-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-        }
-
-        // Завершение регистрации
-        function completeReg() {
-            const name = document.getElementById('reg-name').value;
-            if(!name) return alert("Введите имя!");
-            
-            document.getElementById('display-name').innerText = name;
-            document.getElementById('display-status').innerText = (currentRole === 'student') ? "Tech Talent / Student" : "Verified Employer";
-            
-            // Скрываем всё, показываем приложение
-            document.getElementById('screen-landing').classList.remove('active');
-            document.getElementById('screen-auth').classList.remove('active');
-            document.getElementById('screen-app').classList.add('active');
-        }
-
-        // Переключение вкладок Лента/Профиль
-        function switchTab(id, el) {
-            document.getElementById('page-profile').style.display = 'none';
-            document.getElementById('page-feed').style.display = 'none';
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
-            document.getElementById(id).style.display = 'block';
-            el.classList.add('active');
-        }
-
-        // Добавление поста
-        function addNewPost(event) {
-            const file = event.target.files[0];
-            if(!file) return;
-            const url = URL.createObjectURL(file);
-            const name = document.getElementById('display-name').innerText;
-            const desc = prompt("Напишите описание к фото:");
-
-            // В профиль
-            const gridItem = `<div class="grid-item"><img src="${url}"></div>`;
-            document.getElementById('profile-grid').insertAdjacentHTML('afterbegin', gridItem);
-
-            // В ленту
-            const feedCard = `
-                <div class="feed-card">
-                    <div class="feed-user"><div class="feed-avatar"></div> @${name}</div>
-                    <img src="${url}" style="width: 100%">
-                    <div style="padding: 10px; font-size: 14px;"><strong>${name}</strong> ${desc}</div>
-                </div>`;
-            document.getElementById('feed-list').insertAdjacentHTML('afterbegin', feedCard);
-            
-            alert("Пост добавлен!");
-            switchTab('page-feed', document.querySelectorAll('.nav-item')[0]);
-        }
-    </script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
-<section class="how-it-works">
-    <div class="content-wrapper">
-        <div class="text-block">
-            <span class="label">Instant Career</span>
-            <h2>How it works</h2>
-            <p>
-                The platform evaluates the progress of students’ work and achievements. 
-                Users create their own account cards as their portfolio for employment, 
-                which are promoted to companies for internship and job interview.
-                <br><br>
-                In addition, students could text and apply to businesses’ vacancy announcements.
-            </p>
-        </div>
-        
-        <div class="visual-mockup">
-            <div class="card card-email">
-                <div class="card-header">CloudConnect Demo</div>
-                <div class="card-body">
-                    Hey Chen, how about 10am PT on November 15th?
-                </div>
-                <div class="card-footer">Create portfolio: Nov 15</div>
-            </div>
-            <div class="card card-ai-result">
-                <div class="ai-tag">ai</div>
-                <div class="card-header">BeatPen Evaluation</div>
-                <div class="stats">
-                    <span>Progress: 94%</span>
-                    <span>Status: Ready for Interview</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<section class="card-power">
-    <div class="container">
-        <div class="visual-card-demo">
-            <div class="dynamic-card">
-                <div class="card-glare"></div>
-                <div class="user-info">
-                    <div class="avatar"></div>
-                    <div class="user-meta">
-                        <div class="name-line"></div>
-                        <div class="rank-badge">Top 5% Learner</div>
-                    </div>
-                </div>
-                <div class="growth-graph">
-                    <div class="bar" style="height: 40%"></div>
-                    <div class="bar" style="height: 60%"></div>
-                    <div class="bar" style="height: 90%"></div>
-                </div>
-            </div>
-        </div>
-        <div class="text-block">
-            <h2>Your skills, visualized.</h2>
-            <p>Forget static PDFs. Your BeatPen card is a living portfolio that tracks your growth in real-time. We show companies not just what you've done, but how fast you're learning.</p>
-        </div>
-    </div>
-</section>
-
-<section class="companies-section">
-    <div class="container">
-        <div class="text-block">
-            <h2>Direct line to decision makers.</h2>
-            <p>Skip the HR filters. Your portfolio is pushed directly to tech leads and hiring managers who are looking for fresh talent right now.</p>
-        </div>
-        <div class="trust-icons">
-            <div class="icon-grid">
-                <span>Direct Access</span>
-                <span>Verified Talent</span>
-                <span>No HR Filters</span>
-            </div>
-        </div>
-    </div>
-</section>
-
-<footer>
-    <div class="footer-container">
-        <div class="footer-sidebar">
-            <div class="team-name">Byte Bills team</div>
-            <div class="contact-email">contact@beatpen.com</div>
-        </div>
-        
-        <div class="contact-form">
-            <h3>Get in touch</h3>
-            <div class="input-group">
-                <input type="email" placeholder="Your email address">
-                <button class="btn btn-primary">Send</button>
-            </div>
-        </div>
-    </div>
-</footer>
-
 </html>
