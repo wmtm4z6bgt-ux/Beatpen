@@ -33,6 +33,7 @@ export default function AIChat() {
   if (!isOpen) {
     return (
       <Button
+        id="ai-chat-toggle-button"
         className="fixed bottom-6 right-6 rounded-full w-16 h-16 shadow-lg bg-gradient-to-r from-violet-500 to-purple-500"
         onClick={() => setIsOpen(true)}
       >
