@@ -22,16 +22,18 @@ async function* getGenkitStream(messages: Message[], locale: string): AsyncGener
 
     const model = 'googleai/gemini-2.5-flash';
     
-    const genkitMessages = messages.map(m => ({
-        role: m.role === 'user' ? 'user' : 'model',
+    const history: Message[] = [
+        { role: 'system', content: systemPrompt, id: 'system-prompt' },
+        ...messages,
+    ];
+
+    const genkitMessages = history.map(m => ({
+        role: m.role === 'assistant' ? 'model' : (m.role as 'user' | 'system' | 'model'),
         content: [{ text: m.content }],
     }));
 
     const { stream } = await ai.generate({
         model,
-        prompt: {
-            text: systemPrompt,
-        },
         history: genkitMessages,
         stream: true,
     });
