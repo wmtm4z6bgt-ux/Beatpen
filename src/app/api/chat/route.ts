@@ -1,57 +1,67 @@
+'use server';
+
 import { ai } from '@/ai/genkit';
 import { Message, StreamingTextResponse } from 'ai';
 
-// Genkit requires the Node.js runtime and is not compatible with the Edge runtime.
 export async function POST(req: Request) {
   try {
     const { messages }: { messages: Message[] } = await req.json();
 
-    const systemPrompt = "You are BeatPen Guide, an AI assistant for students and recent graduates using the BeatPen platform. Your goal is to provide helpful career advice, assist with improving resumes and achievement descriptions, and answer questions about finding internships or using the platform's features. Be professional, encouraging, and supportive.";
-    
-    // Format the entire conversation history into a single string.
-    // This is the most robust way to pass the conversation to the AI
-    // based on the error messages from your build environment.
-    const conversation = messages
-      .map(m => `${m.role === 'user' ? 'User' : 'AI'}: ${m.content}`)
-      .join('\n\n');
+    // System prompt to guide the AI
+    const systemPrompt = "You are BeatPen Guide, an AI assistant for students and recent graduates using the BeatPen platform. Your goal is to provide helpful career advice, assist with improving resumes and achievement descriptions, and answer questions about finding internships or using the platform's features. Be professional, encouraging, and supportive. You are having a conversation with a user. Keep your responses concise and helpful, in the style of a text message chat.";
 
-    const fullPrompt = `${systemPrompt}\n\nHere is the current conversation:\n\n${conversation}`;
-    
-    // Generate the AI stream using Genkit. We pass the prompt directly as a string.
-    const { stream, response } = await ai.generateStream(fullPrompt);
+    // Format the conversation history into a single string prompt for Genkit
+    // This avoids the TypeScript error with the `history` object.
+    const conversationHistory = messages
+      .map(m => `${m.role === 'user' ? 'User' : 'Assistant'}: ${m.content}`)
+      .join('\n');
 
-    // Convert the Genkit stream into a format compatible with the Vercel AI SDK
+    const fullPrompt = `${systemPrompt}\n\nCURRENT CONVERSATION:\n${conversationHistory}`;
+
+    // Call Genkit's generateStream with the single string prompt
+    const genkitStream = await ai.generateStream(fullPrompt);
+
+    // This function safely converts the Genkit stream into a format the Vercel AI SDK understands.
     const readableStream = new ReadableStream({
       async start(controller) {
         const encoder = new TextEncoder();
         try {
-          // Stream the AI's response chunk by chunk
-          for await (const chunk of stream) {
-            const text = chunk.text;
-            if (text) {
-              controller.enqueue(encoder.encode(text));
+          for await (const chunk of genkitStream.stream) {
+            if (chunk.text) {
+              controller.enqueue(encoder.encode(chunk.text));
             }
           }
-          // Wait for the full response to be processed before closing.
-          await response;
-        } catch (error) {
-          console.error("Error during AI stream processing:", error);
+          await genkitStream.response; // Wait for the full response to be processed
+        } catch (e) {
+          // If the stream itself errors, log it and send an error message down the stream.
+          console.error("Error during AI stream processing:", e);
           const errorText = "\n\n[AI Assistant is currently unavailable]";
-          controller.enqueue(encoder.encode(errorText));
+          try {
+            controller.enqueue(encoder.encode(errorText));
+          } catch {}
         } finally {
+          // Ensure the stream is always closed.
           controller.close();
         }
       },
     });
 
+    // Return the stream as a response.
     return new StreamingTextResponse(readableStream);
 
-  } catch (error: any) {
-    console.error("AI POST initial setup error:", error);
-    // This block catches errors from the initial request setup, like JSON parsing.
-    return new Response(
-      JSON.stringify({ error: 'The AI service encountered a setup error. Please try again.' }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+  } catch (error) {
+    // This is the critical error handling block.
+    // If any error occurs (e.g., API key is missing), we DO NOT crash.
+    // Instead, we return a valid, safe streaming response with an error message.
+    // This prevents the frontend from crashing and causing a page reload.
+    console.error("Fatal error in AI chat API:", error);
+    const errorStream = new ReadableStream({
+        start(controller) {
+            const encoder = new TextEncoder();
+            controller.enqueue(encoder.encode("Произошла ошибка. Пожалуйста, попробуйте снова."));
+            controller.close();
+        }
+    });
+    return new StreamingTextResponse(errorStream, { status: 500 });
   }
 }
