@@ -29,8 +29,7 @@ import { doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Skeleton } from '../ui/skeleton';
 import { useTranslations } from 'next-intl';
-import { PlusCircle, Trash2, Wand2, Loader2, Copy } from 'lucide-react';
-import { generateAchievementSuggestions } from '@/ai/flows/generate-achievement-suggestions';
+import { PlusCircle, Trash2 } from 'lucide-react';
 
 
 const majors = [
@@ -52,8 +51,6 @@ export default function ProfessionalProfileForm() {
   const { toast } = useToast();
   const { userData } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [generatingIndex, setGeneratingIndex] = useState<number | null>(null);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
   const t = useTranslations('Settings');
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -97,34 +94,6 @@ export default function ProfessionalProfileForm() {
       setLoading(false);
     }
   }
-
-  const handleGenerateSuggestions = async (index: number) => {
-    setGeneratingIndex(index);
-    setSuggestions([]);
-    try {
-      const achievementValue = form.getValues(`achievements.${index}.text`);
-      const result = await generateAchievementSuggestions({
-        currentAchievement: achievementValue,
-        major: userData?.major,
-        bio: userData?.bio,
-      });
-      setSuggestions(result.suggestions);
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Failed to generate suggestions',
-        description: 'Please try again later.',
-      });
-    }
-  };
-
-  const applySuggestion = (suggestion: string) => {
-    if (generatingIndex !== null) {
-      form.setValue(`achievements.${generatingIndex}.text`, suggestion, { shouldValidate: true });
-    }
-    setSuggestions([]);
-    setGeneratingIndex(null);
-  };
 
   if (!userData) {
     return <Card>
@@ -191,31 +160,6 @@ export default function ProfessionalProfileForm() {
                             </FormItem>
                         )}
                     />
-                    <div className="flex items-center justify-between">
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleGenerateSuggestions(index)}
-                            disabled={generatingIndex === index}
-                        >
-                            {generatingIndex === index && suggestions.length === 0 ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                            {t('suggestWithAI')}
-                        </Button>
-                    </div>
-                     {generatingIndex === index && (
-                        <div className="space-y-2">
-                            {suggestions.length === 0 ? <Skeleton className="w-full h-20" /> : <p className="text-sm font-medium text-muted-foreground">{t('aiSuggestions')}</p>}
-                            {suggestions.map((suggestion, sIndex) => (
-                                <div key={sIndex} className="flex items-center gap-2 p-3 rounded-md border bg-secondary/50 text-sm cursor-pointer hover:bg-secondary transition-colors" onClick={() => applySuggestion(suggestion)}>
-                                    <p className="flex-1">{suggestion}</p>
-                                    <Button type="button" size="icon" variant="ghost" className="h-8 w-8" onClick={(e) => { e.stopPropagation(); navigator.clipboard.writeText(suggestion); toast({title: "Copied!"})}}>
-                                        <Copy className="h-4 w-4" />
-                                    </Button>
-                                </div>
-                            ))}
-                        </div>
-                    )}
                 </div>
                 ))}
                 <Button

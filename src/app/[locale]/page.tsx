@@ -8,13 +8,6 @@ import { useTranslations } from 'next-intl';
 export default function Home() {
   const t = useTranslations('Landing');
 
-  const handleAssessmentClick = () => {
-    const chatButton = document.getElementById('ai-chat-toggle-button');
-    if (chatButton) {
-      chatButton.click();
-    }
-  };
-
   return (
     <main className="bg-black text-white w-full overflow-x-hidden">
       {/* Add a wrapper for padding top to account for absolute header */}
@@ -37,56 +30,12 @@ export default function Home() {
 >
   {t('getStarted')}
 </Link>
-
-<Link
-  href="#"
-  className="inline-block border border-white/50 text-white hover:bg-white/10 hover:text-white rounded-lg px-8 py-3 font-semibold text-center"
->
-  {t('learnMore')}
-</Link>
               </div>
             </div>
             <div className="relative flex items-center justify-center">
               <div className="w-full max-w-sm bg-zinc-900 rounded-xl p-6 border border-zinc-800 shadow-[0_0_3rem_rgba(167,139,250,0.15)]">
                 <div className="p-3 rounded-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 flex items-center shadow-lg">
                   <p className="text-white/90 text-sm mx-auto tracking-wider">{t('searchInput')}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section className="container mx-auto px-6 md:px-8 py-24 md:py-32">
-          <div className="max-w-3xl mx-auto flex flex-col items-center text-center space-y-8">
-            <p className="font-semibold text-violet-400 tracking-widest">{t('featureTag')}</p>
-            <h2 className="text-3xl md:text-5xl font-bold">{t('featureTitle')}</h2>
-            <p className="max-w-2xl text-gray-400 md:text-lg">
-              {t('featureText')}
-            </p>
-            <Button onClick={handleAssessmentClick} className="bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-lg px-8 font-semibold">
-              {t('tryAIAssessment')}
-            </Button>
-            <div className="relative w-full max-w-md h-64 mt-12">
-              <div className="absolute top-8 left-0 w-[80%] bg-zinc-900/50 backdrop-blur-sm rounded-xl p-4 border border-zinc-800 transform -rotate-6">
-                <h3 className="font-semibold">{t('demoCardTitle')}</h3>
-                <p className="text-gray-400 text-sm mt-1">{t('demoCardText')}</p>
-              </div>
-              <div className="absolute bottom-0 right-0 w-[85%] bg-zinc-900 rounded-xl p-4 border border-zinc-800 shadow-2xl shadow-violet-500/10 transform rotate-3">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-semibold">{t('evalCardTitle')}</h3>
-                  <span className="text-xs font-bold bg-violet-500/20 text-violet-300 border border-violet-500/30 rounded-full px-2 py-0.5">ai</span>
-                </div>
-                <div className="mt-4 space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">{t('evalCardProgress')}</span>
-                    <span className="font-semibold text-violet-400">94%</span>
-                  </div>
-                  <Progress value={94} className="h-2 bg-zinc-800 [&>div]:bg-gradient-to-r [&>div]:from-violet-500 [&>div]:to-purple-500" />
-                </div>
-                <div className="mt-4 flex justify-between text-sm">
-                  <span className="text-gray-400">{t('evalCardStatus')}</span>
-                  <span className="font-semibold text-violet-400">{t('evalCardStatusReady')}</span>
                 </div>
               </div>
             </div>
