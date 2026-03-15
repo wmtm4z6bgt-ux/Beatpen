@@ -1,0 +1,64 @@
+{
+  "placeholderImages": [
+    {
+      "id": "profile-banner",
+      "description": "Modern office building with a glass facade",
+      "imageUrl": "https://picsum.photos/seed/careerconnect-banner/1200/400",
+      "imageHint": "modern office"
+    },
+    {
+      "id": "hero-image",
+      "description": "Diverse group of students collaborating on a project",
+      "imageUrl": "https://picsum.photos/seed/careerconnect-hero/800/600",
+      "imageHint": "students networking"
+    },
+    {
+      "id": "company-1",
+      "description": "Logo for a tech company",
+      "imageUrl": "https://picsum.photos/seed/company1/300/300",
+      "imageHint": "tech company"
+    },
+    {
+      "id": "company-2",
+      "description": "Logo for a startup",
+      "imageUrl": "https://picsum.photos/seed/company2/300/300",
+      "imageHint": "startup logo"
+    },
+    {
+      "id": "company-3",
+      "description": "Logo for a design agency",
+      "imageUrl": "https://picsum.photos/seed/company3/300/300",
+      "imageHint": "design agency"
+    },
+    {
+      "id": "company-4",
+      "description": "Logo for a finance firm",
+      "imageUrl": "https://picsum.photos/seed/company4/300/300",
+      "imageHint": "finance firm"
+    },
+    {
+      "id": "company-5",
+      "description": "Logo for a data analytics company",
+      "imageUrl": "https://picsum.photos/seed/company5/300/300",
+      "imageHint": "data analytics"
+    },
+    {
+      "id": "company-6",
+      "description": "Logo for a creative agency",
+      "imageUrl": "https://picsum.photos/seed/company6/300/300",
+      "imageHint": "creative agency"
+    },
+    {
+      "id": "company-7",
+      "description": "Logo for a software solutions firm",
+      "imageUrl": "https://picsum.photos/seed/company7/300/300",
+      "imageHint": "software solutions"
+    },
+    {
+      "id": "company-8",
+      "description": "Logo for a marketing group",
+      "imageUrl": "https://picsum.photos/seed/company8/300/300",
+      "imageHint": "marketing group"
+    }
+  ]
+}
