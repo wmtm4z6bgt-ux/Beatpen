@@ -49,8 +49,8 @@ export default function Home() {
             <p className="max-w-2xl text-gray-400 md:text-lg">
               {t('featureText')}
             </p>
-            <Button className="bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-lg px-8 font-semibold">
-              {t('tryAIAssessment')}
+            <Button asChild className="bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-lg px-8 font-semibold">
+              <Link href="/auth?tab=register">{t('tryAIAssessment')}</Link>
             </Button>
             <div className="relative w-full max-w-md h-64 mt-12">
               <div className="absolute top-8 left-0 w-[80%] bg-zinc-900/50 backdrop-blur-sm rounded-xl p-4 border border-zinc-800 transform -rotate-6">
