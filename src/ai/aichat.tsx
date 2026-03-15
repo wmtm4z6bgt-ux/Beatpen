@@ -60,7 +60,7 @@ export default function AIChat() {
               </div>
             )}
 
-            {messages.map(m => (
+            {messages.map((m: any) => (
               <div key={m.id} className={cn('flex gap-3', m.role === 'user' ? 'justify-end' : 'justify-start')}>
                 {m.role === 'assistant' && (
                   <Avatar className="h-8 w-8">
