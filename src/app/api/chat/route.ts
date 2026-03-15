@@ -1,3 +1,4 @@
+'use client';
 import { ai } from '@/ai/genkit';
 import { Message, StreamingTextResponse } from 'ai';
 
