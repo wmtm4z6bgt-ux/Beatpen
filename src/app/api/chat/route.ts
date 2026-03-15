@@ -2,7 +2,7 @@ import { ai } from '@/ai/genkit';
 import { Message, StreamingTextResponse } from 'ai';
 
 // IMPORTANT! This API route uses the Node.js runtime by default.
-// Genkit is not compatible with the Edge runtime on Vercel, so 'export const runtime = "edge"' is not used.
+// Genkit is not compatible with the Edge runtime on Vercel.
 
 export async function POST(req: Request) {
   try {
