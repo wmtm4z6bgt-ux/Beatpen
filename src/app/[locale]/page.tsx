@@ -31,12 +31,19 @@ export default function Home() {
                 {t('heroSubtitle')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button asChild size="lg" className="bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-lg px-8 font-semibold">
-                  <Link href="/auth?tab=register">{t('getStarted')}</Link>
-                </Button>
-                <Button asChild size="lg" variant="outline" className="border-white/50 text-white hover:bg-white/10 hover:text-white rounded-lg px-8 font-semibold">
-                  <Link href="#">{t('learnMore')}</Link>
-                </Button>
+              <Link
+  href="/auth?tab=register"
+  className="inline-block bg-gradient-to-r from-violet-500 to-purple-500 text-white rounded-lg px-8 py-3 font-semibold text-center"
+>
+  {t('getStarted')}
+</Link>
+
+<Link
+  href="#"
+  className="inline-block border border-white/50 text-white hover:bg-white/10 hover:text-white rounded-lg px-8 py-3 font-semibold text-center"
+>
+  {t('learnMore')}
+</Link>
               </div>
             </div>
             <div className="relative flex items-center justify-center">
