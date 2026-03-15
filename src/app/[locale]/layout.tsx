@@ -4,6 +4,7 @@ import { AuthProvider } from '@/context/auth-context';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/header';
 import {NextIntlClientProvider, useMessages} from 'next-intl';
+import AIChat from '@/ai/aichat';
 
 export const metadata: Metadata = {
   title: 'BEATPEN - Feel the beat. Lead the line.',
@@ -35,6 +36,7 @@ export default function RootLayout({
             <Header />
             {children}
             <Toaster />
+            <AIChat />
           </AuthProvider>
         </NextIntlClientProvider>
       </body>
