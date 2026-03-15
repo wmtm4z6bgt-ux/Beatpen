@@ -1,9 +1,11 @@
+// src/app/api/chat/route.ts
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { StreamingTextResponse } from 'ai';
 
-// 1. Set the runtime to 'nodejs' to prevent build errors on Vercel.
+// IMPORTANT: Use the Node.js runtime to avoid Vercel build errors.
 export const runtime = 'nodejs';
 
-// Ensure the API key is defined to avoid runtime errors.
+// Ensure the Gemini API key is set in environment variables.
 if (!process.env.GEMINI_API_KEY) {
   throw new Error('GEMINI_API_KEY environment variable is not set');
 }
@@ -12,47 +14,60 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export async function POST(req: Request) {
   try {
-    const { messages } = await req.json();
+    const { messages }: { messages: { role: string; content: string }[] } = await req.json();
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    if (!messages || messages.length === 0) {
+      return new Response(
+        'No messages provided',
+        { status: 400, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
+      );
+    }
 
-    // The last message is the new prompt
     const lastMessage = messages[messages.length - 1].content;
 
-    // The history is everything before the last message
-    const history = messages.slice(0, -1).map((message: { role: string; content: string }) => ({
-      role: message.role === 'user' ? 'user' : 'model',
-      parts: [{ text: message.content }],
+    // Set up the model with chat history
+    const history = messages.slice(0, -1).map(msg => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.content }],
     }));
-
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
     const chat = model.startChat({ history });
 
     const result = await chat.sendMessageStream(lastMessage);
 
-    // Create a new stream for the response that the client can consume.
-    const stream = new ReadableStream({
+    // Create a ReadableStream to stream the response
+    const readableStream = new ReadableStream({
       async start(controller) {
-        for await (const chunk of result.stream) {
-          if (chunk && typeof chunk.text === 'function') {
-            const text = chunk.text();
-            controller.enqueue(text);
+        const encoder = new TextEncoder();
+        try {
+          for await (const chunk of result.stream) {
+            if (chunk && typeof chunk.text === 'function') {
+              const text = chunk.text();
+              controller.enqueue(encoder.encode(text));
+            }
           }
+        } catch (error) {
+          console.error('[Stream Error]', error);
+          // Send a user-friendly error message in the stream if an error occurs
+          controller.enqueue(encoder.encode('[AI Assistant is currently unavailable]'));
+        } finally {
+          controller.close();
         }
-        controller.close();
       },
     });
 
-    return new Response(stream);
+    // Return the stream as a response
+    return new StreamingTextResponse(readableStream);
   } catch (error) {
     console.error('[API] Chat Error:', error);
-    // 2. In case of an error, return a Response object with a stream
-    // that contains a user-facing error message. This prevents the client from crashing.
+    // Return a structured error stream in case of a server-level failure
     const errorStream = new ReadableStream({
-        start(controller) {
-            controller.enqueue('Sorry, I am unable to process your request at the moment. Please try again later.');
-            controller.close();
-        }
+      start(controller) {
+        const encoder = new TextEncoder();
+        controller.enqueue(encoder.encode('Sorry, I am unable to process your request. Please try again later.'));
+        controller.close();
+      },
     });
-    return new Response(errorStream, { status: 500, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+    return new StreamingTextResponse(errorStream);
   }
 }

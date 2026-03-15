@@ -5,23 +5,31 @@ import LoginForm from '@/components/auth/login-form';
 import RegisterForm from '@/components/auth/register-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslations } from 'next-intl';
-import { useSearchParams } from 'next/navigation';
 import { useRouter, usePathname } from '@/navigation';
-import { Suspense } from 'react';
+import { useState, useEffect } from 'react';
 
-function AuthContent() {
+// Using a single component avoids issues with Suspense and simplifies state management.
+export default function AuthPage() {
     const router = useRouter();
     const pathname = usePathname();
-    const searchParams = useSearchParams();
     const t = useTranslations('Auth');
 
-    // On the server, searchParams is empty, so this will default to 'login'.
-    // On the client, it will correctly read the URL parameter.
-    // This avoids hydration errors when the component is wrapped in Suspense.
-    const activeTab = searchParams.get('tab') === 'register' ? 'register' : 'login';
+    // Default to 'login', which is consistent on server and client initial render.
+    const [activeTab, setActiveTab] = useState('login');
+
+    // This effect runs *only* on the client, after the initial render.
+    // This avoids any server-client mismatch (hydration error).
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const tab = params.get('tab');
+        if (tab === 'register') {
+            setActiveTab('register');
+        }
+    }, []); // Empty array ensures this runs only once on mount.
 
     const handleTabChange = (value: string) => {
-        // Update the URL without adding to browser history, which is better for UX.
+        setActiveTab(value);
+        // Update the URL without adding to browser history for a cleaner UX.
         router.replace(`${pathname}?tab=${value}`);
     };
 
@@ -42,14 +50,5 @@ function AuthContent() {
                 </Tabs>
             </div>
         </AuthLayout>
-    );
-}
-
-export default function AuthPage() {
-    return (
-        // The Suspense boundary is crucial for components that use `useSearchParams`.
-        <Suspense fallback={<AuthLayout><div>Loading...</div></AuthLayout>}>
-            <AuthContent />
-        </Suspense>
     );
 }
