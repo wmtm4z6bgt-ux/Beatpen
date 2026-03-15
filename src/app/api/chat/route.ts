@@ -1,19 +1,17 @@
-'use server';
-
-import {ai} from '@/ai/genkit';
-import {Message, StreamingTextResponse} from 'ai';
+import { ai } from '@/ai/genkit';
+import { Message, StreamingTextResponse } from 'ai';
 
 export const runtime = 'edge';
 
 export async function POST(req: Request) {
-  const {messages}: {messages: Message[]} = await req.json();
-
-  // Use a try...catch block to handle potential errors from the AI service
   try {
-    const {stream: genkitStream} = await ai.generateStream({
-      prompt: messages.map(m => ({
-        role: m.role === 'assistant' ? 'model' : m.role,
-        content: [{text: m.content}],
+    const { messages }: { messages: Message[] } = await req.json();
+
+    const { stream: genkitStream } = await ai.generateStream({
+      // Преобразуем формат сообщений для Genkit/Gemini
+      prompt: messages.map((m) => ({
+        role: m.role === 'assistant' ? 'model' : 'user', // Gemini использует 'user' и 'model'
+        content: [{ text: String(m.content) }],
       })),
       config: {
         temperature: 0.5,
@@ -23,10 +21,20 @@ export async function POST(req: Request) {
     const readableStream = new ReadableStream({
       async start(controller) {
         const encoder = new TextEncoder();
+
         try {
           for await (const chunk of genkitStream) {
-            if (chunk.text) {
-              controller.enqueue(encoder.encode(chunk.text));
+            let content = '';
+
+            // безопасно извлекаем текст
+            if (typeof chunk?.text === 'string') {
+              content = chunk.text;
+            } else if (typeof chunk?.text === 'function') {
+              content = chunk.text();
+            }
+
+            if (content) {
+              controller.enqueue(encoder.encode(content));
             }
           }
         } catch (error) {
@@ -39,17 +47,19 @@ export async function POST(req: Request) {
     });
 
     return new StreamingTextResponse(readableStream);
+
   } catch (error) {
     console.error('Failed to initialize AI stream:', error);
-    // Return a structured error response that the client can handle
+
     return new Response(
       JSON.stringify({
-        error:
-          'The AI service is currently unavailable. Please try again later.',
+        error: 'AI service unavailable',
       }),
       {
         status: 500,
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }
     );
   }
