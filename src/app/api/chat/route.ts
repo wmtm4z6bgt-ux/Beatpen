@@ -2,7 +2,8 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { GoogleGenerativeAIStream, Message, StreamingTextResponse } from 'ai';
 
-export const runtime = 'nodejs';
+// IMPORTANT: The 'edge' runtime is not used to ensure compatibility with Vercel's standard Node.js environment.
+// export const runtime = 'edge';
 
 // Function to build the prompt for the Gemini API
 function buildGoogleGenAIPrompt(messages: Message[]) {
@@ -19,13 +20,16 @@ function buildGoogleGenAIPrompt(messages: Message[]) {
 export async function POST(req: Request) {
   // Check for the API key inside the handler to avoid crashing the server on startup
   if (!process.env.GEMINI_API_KEY) {
-    return new Response(
-      JSON.stringify({ error: 'GEMINI_API_KEY environment variable is not set.' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
+    const errorStream = new ReadableStream({
+      start(controller) {
+        controller.enqueue('Error: GEMINI_API_KEY environment variable is not set.');
+        controller.close();
       }
-    );
+    });
+    return new StreamingTextResponse(errorStream, {
+        status: 500,
+        headers: { 'Content-Type': 'text/plain' },
+    });
   }
 
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -45,13 +49,16 @@ export async function POST(req: Request) {
     return new StreamingTextResponse(stream);
   } catch (error: any) {
     console.error('[API] Chat Error:', error);
-    // Return a structured JSON error response
-    return new Response(
-      JSON.stringify({ error: error.message || 'An unknown error occurred.' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
+    // For any other errors, return a readable error stream
+    const errorStream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(`Error: ${error.message || 'An unknown error occurred.'}`);
+        controller.close();
       }
-    );
+    });
+    return new StreamingTextResponse(errorStream, {
+        status: 500,
+        headers: { 'Content-Type': 'text/plain' },
+    });
   }
 }

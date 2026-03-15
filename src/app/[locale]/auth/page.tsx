@@ -3,52 +3,78 @@
 import AuthLayout from '@/components/auth/auth-layout';
 import LoginForm from '@/components/auth/login-form';
 import RegisterForm from '@/components/auth/register-form';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import { useTranslations } from 'next-intl';
-import { useRouter, usePathname } from '@/navigation';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Skeleton } from '@/components/ui/skeleton';
 
-// Using a single component avoids issues with Suspense and simplifies state management.
-export default function AuthPage() {
-    const router = useRouter();
-    const pathname = usePathname();
+function AuthPageContent() {
     const t = useTranslations('Auth');
+    const searchParams = useSearchParams();
+    
+    // Default to login on the server, then update on the client in useEffect.
+    const [isLogin, setIsLogin] = useState(true);
 
-    // Default to 'login', which is consistent on server and client initial render.
-    const [activeTab, setActiveTab] = useState('login');
-
-    // This effect runs *only* on the client, after the initial render.
-    // This avoids any server-client mismatch (hydration error).
     useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const tab = params.get('tab');
-        if (tab === 'register') {
-            setActiveTab('register');
+        // This runs only on the client, after hydration, preventing a mismatch.
+        if (searchParams.get('tab') === 'register') {
+            setIsLogin(false);
+        } else {
+            setIsLogin(true);
         }
-    }, []); // Empty array ensures this runs only once on mount.
-
-    const handleTabChange = (value: string) => {
-        setActiveTab(value);
-        // Update the URL without adding to browser history for a cleaner UX.
-        router.replace(`${pathname}?tab=${value}`);
-    };
+    }, [searchParams]);
 
     return (
-        <AuthLayout>
-            <div className="w-full max-w-md">
-                <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="login">{t('login')}</TabsTrigger>
-                        <TabsTrigger value="register">{t('register')}</TabsTrigger>
-                    </TabsList>
-                    <TabsContent value="login">
-                        <LoginForm />
-                    </TabsContent>
-                    <TabsContent value="register">
-                        <RegisterForm />
-                    </TabsContent>
-                </Tabs>
+        <div className="w-full max-w-md">
+            <div className="grid grid-cols-2 gap-2 mb-4 p-1 bg-muted rounded-lg">
+                <Button
+                    onClick={() => setIsLogin(true)}
+                    className={cn(
+                        'text-muted-foreground transition-all',
+                        isLogin && 'bg-background text-foreground shadow-sm'
+                    )}
+                    variant="ghost"
+                >
+                    {t('login')}
+                </Button>
+                <Button
+                    onClick={() => setIsLogin(false)}
+                    className={cn(
+                        'text-muted-foreground transition-all',
+                        !isLogin && 'bg-background text-foreground shadow-sm'
+                    )}
+                    variant="ghost"
+                >
+                    {t('register')}
+                </Button>
             </div>
+            <div>
+                {isLogin ? <LoginForm /> : <RegisterForm />}
+            </div>
+        </div>
+    );
+}
+
+function AuthSkeleton() {
+    return (
+        <div className="w-full max-w-md space-y-4">
+            <div className="grid grid-cols-2 gap-2 p-1">
+                <Skeleton className="h-10" />
+                <Skeleton className="h-10" />
+            </div>
+            <Skeleton className="h-64" />
+        </div>
+    );
+}
+
+export default function AuthPage() {
+    return (
+        <AuthLayout>
+            <Suspense fallback={<AuthSkeleton />}>
+                <AuthPageContent />
+            </Suspense>
         </AuthLayout>
     );
 }

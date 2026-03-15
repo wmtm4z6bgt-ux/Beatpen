@@ -22,9 +22,8 @@ export default function AIChat() {
   
   const getInitials = (name?: string | null) => name ? name.charAt(0).toUpperCase() : 'U';
 
-  // The handleSubmit function from useChat already includes e.preventDefault()
-  // to prevent page reloads.
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     handleSubmit(e);
   };
 
@@ -41,7 +40,7 @@ export default function AIChat() {
   }
 
   return (
-    <Card className="fixed bottom-6 right-6 w-96 h-[600px] shadow-2xl rounded-2xl bg-black/50 backdrop-blur-lg border-violet-500/20 flex flex-col overflow-hidden">
+    <Card className="fixed bottom-6 right-6 w-96 h-[600px] shadow-2xl rounded-2xl bg-black/50 backdrop-blur-lg border-violet-500/20 flex flex-col overflow-hidden z-50">
       <CardHeader className="flex flex-row justify-between items-center p-4 border-b border-white/10">
         <div className="flex items-center gap-2">
           <Bot className="h-6 w-6 text-violet-400" />
@@ -102,13 +101,13 @@ export default function AIChat() {
       <CardFooter className="p-4 border-t border-white/10">
         <form className="flex w-full gap-2 items-center" onSubmit={handleFormSubmit}>
           <Input
-            id="chat-input"
+            id="chat-input-isolated"
             value={input}
             onChange={handleInputChange}
             placeholder="Ask the assistant..."
             className="bg-zinc-800 border-zinc-700 focus:ring-violet-500"
           />
-          <Button id="chat-submit" type="submit" size="icon" disabled={isLoading}>
+          <Button id="chat-submit-isolated" type="submit" size="icon" disabled={isLoading}>
             <Send className="h-4 w-4" />
           </Button>
         </form>
