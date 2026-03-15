@@ -17,17 +17,20 @@ export default function AIChat() {
 
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: '/api/chat',
-    body: {},
   });
 
-  const getInitials = (name?: string | null) => name ? name[0].toUpperCase() : 'U';
+  const getInitials = (name?: string | null) => (name ? name.charAt(0).toUpperCase() : 'U');
+  
+  const handleOpen = () => setIsOpen(true);
+  const handleClose = () => setIsOpen(false);
 
   if (!isOpen) {
     return (
       <Button
         id="ai-chat-toggle-button"
         className="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-gradient-to-r from-violet-500 to-purple-500 shadow-lg"
-        onClick={() => setIsOpen(true)}
+        onClick={handleOpen}
+        aria-label="Open AI Chat"
       >
         <Bot className="h-8 w-8 text-white" />
       </Button>
@@ -35,10 +38,10 @@ export default function AIChat() {
   }
 
   return (
-    <Card className="fixed bottom-6 right-6 w-96 h-[600px] shadow-2xl rounded-2xl bg-black/50 backdrop-blur-lg border-violet-500/20 flex flex-col overflow-hidden">
-      <CardHeader className="flex justify-between items-center p-4 border-b border-white/10">
+    <Card className="fixed bottom-6 right-6 w-96 h-[600px] shadow-2xl rounded-2xl bg-black/50 backdrop-blur-lg border-violet-500/20 flex flex-col overflow-hidden z-50">
+      <CardHeader className="flex flex-row justify-between items-center p-4 border-b border-white/10">
         <CardTitle className="text-white font-semibold">BeatPen Guide</CardTitle>
-        <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
+        <Button variant="ghost" size="icon" onClick={handleClose} aria-label="Close AI Chat">
           <X className="h-5 w-5" />
         </Button>
       </CardHeader>
@@ -52,7 +55,7 @@ export default function AIChat() {
               </div>
             )}
             {messages.map(m => (
-              <div key={m.id} className={cn("flex gap-2", m.role === 'user' ? 'justify-end' : 'justify-start')}>
+              <div key={m.id} className={cn("flex items-end gap-2", m.role === 'user' ? 'justify-end' : 'justify-start')}>
                 {m.role === 'assistant' && (
                   <Avatar className="h-8 w-8">
                     <AvatarFallback className="bg-violet-500 text-white"><Bot className="h-5 w-5"/></AvatarFallback>
@@ -62,7 +65,7 @@ export default function AIChat() {
                   "max-w-xs rounded-2xl px-4 py-2 text-sm",
                   m.role === 'user' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-secondary text-secondary-foreground rounded-bl-none'
                 )}>
-                  {m.content}
+                  <p style={{ whiteSpace: 'pre-wrap' }}>{m.content}</p>
                 </div>
                 {m.role === 'user' && (
                   <Avatar className="h-8 w-8">
@@ -72,13 +75,13 @@ export default function AIChat() {
                 )}
               </div>
             ))}
-            {isLoading && (
+            {isLoading && messages[messages.length -1]?.role === 'user' && (
               <div className="flex gap-2 justify-start items-center">
                 <Avatar className="h-8 w-8">
                   <AvatarFallback className="bg-violet-500 text-white"><Bot className="h-5 w-5"/></AvatarFallback>
                 </Avatar>
                 <div className="max-w-xs rounded-2xl px-4 py-2 bg-secondary text-secondary-foreground flex items-center">
-                  Loading...
+                  <span className="animate-pulse">...</span>
                 </div>
               </div>
             )}
@@ -89,12 +92,14 @@ export default function AIChat() {
       <CardFooter className="p-4 border-t border-white/10">
         <form onSubmit={handleSubmit} className="flex w-full gap-2 items-center">
           <Input
+            id="ai-chat-input"
             value={input}
             onChange={handleInputChange}
             placeholder="Ask the assistant..."
             className="bg-zinc-800 border-zinc-700 focus:ring-violet-500"
+            autoComplete="off"
           />
-          <Button type="submit" disabled={isLoading} size="icon">
+          <Button type="submit" disabled={isLoading} size="icon" aria-label="Send Message">
             <Send className="h-4 w-4" />
           </Button>
         </form>
