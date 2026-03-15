@@ -1,7 +1,6 @@
+'use client';
 import { ai } from '@/ai/genkit';
 import { Message, StreamingTextResponse } from 'ai';
-
-export const runtime = 'edge';
 
 export async function POST(req: Request) {
   try {
