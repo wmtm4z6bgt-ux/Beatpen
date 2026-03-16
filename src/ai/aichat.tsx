@@ -1,9 +1,7 @@
-// src/ai/aichat.tsx
 'use client';
 
 import { useState } from 'react';
-import { useChat } from '@ai-sdk/react';
-import type { Message } from 'ai/react';
+import { useChat, type UseChatHelpers } from '@ai-sdk/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -17,10 +15,17 @@ export default function AIChat() {
   const [isOpen, setIsOpen] = useState(false);
   const { userData } = useAuth();
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
+  // The 'api' property is deprecated. useChat defaults to '/api/chat'.
+  const { messages, input, handleInputChange, handleSubmit, isLoading }: UseChatHelpers = useChat();
   
   const getInitials = (name?: string | null) => name ? name.charAt(0).toUpperCase() : 'U';
 
+  // The handleSubmit from useChat already handles e.preventDefault()
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    handleSubmit(e);
+  };
+
+  
   if (!isOpen) {
     return (
       <Button
@@ -54,7 +59,7 @@ export default function AIChat() {
               </div>
             )}
 
-            {messages.map((m: Message) => (
+            {messages.map((m: any) => (
               <div key={m.id} className={cn('flex gap-3', m.role === 'user' ? 'justify-end' : 'justify-start')}>
                 {m.role === 'assistant' && (
                   <Avatar className="h-8 w-8">
@@ -93,7 +98,7 @@ export default function AIChat() {
       </CardContent>
 
       <CardFooter className="p-4 border-t border-white/10">
-        <form className="flex w-full gap-2 items-center" onSubmit={handleSubmit}>
+        <form className="flex w-full gap-2 items-center" onSubmit={handleFormSubmit}>
           <Input
             id="chat-input-isolated"
             value={input}

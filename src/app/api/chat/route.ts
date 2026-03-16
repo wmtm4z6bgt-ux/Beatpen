@@ -25,7 +25,7 @@ export async function POST(req: Request) {
       messages,
     });
 
-    return result.toAIStreamResponse();
+    return result.toTextStreamResponse();
 
   } catch (error: any) {
     console.error('[API] Chat Error:', error);
