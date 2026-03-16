@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import { useChat } from '@ai-sdk/react';
+import type { Message } from 'ai/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -16,16 +17,9 @@ export default function AIChat() {
   const [isOpen, setIsOpen] = useState(false);
   const { userData } = useAuth();
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
-    api: '/api/chat',
-  });
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
   
   const getInitials = (name?: string | null) => name ? name.charAt(0).toUpperCase() : 'U';
-
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    handleSubmit(e);
-  };
 
   if (!isOpen) {
     return (
@@ -60,7 +54,7 @@ export default function AIChat() {
               </div>
             )}
 
-            {messages.map((m: any) => (
+            {messages.map((m: Message) => (
               <div key={m.id} className={cn('flex gap-3', m.role === 'user' ? 'justify-end' : 'justify-start')}>
                 {m.role === 'assistant' && (
                   <Avatar className="h-8 w-8">
@@ -99,7 +93,7 @@ export default function AIChat() {
       </CardContent>
 
       <CardFooter className="p-4 border-t border-white/10">
-        <form className="flex w-full gap-2 items-center" onSubmit={handleFormSubmit}>
+        <form className="flex w-full gap-2 items-center" onSubmit={handleSubmit}>
           <Input
             id="chat-input-isolated"
             value={input}
@@ -107,7 +101,7 @@ export default function AIChat() {
             placeholder="Ask the assistant..."
             className="bg-zinc-800 border-zinc-700 focus:ring-violet-500"
           />
-          <Button id="chat-submit-isolated" type="submit" size="icon" disabled={isLoading}>
+          <Button id="chat-submit-isolated" type="submit" disabled={isLoading}>
             <Send className="h-4 w-4" />
           </Button>
         </form>
