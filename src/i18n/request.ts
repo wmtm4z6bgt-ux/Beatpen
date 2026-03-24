@@ -1,10 +1,18 @@
-import {getRequestConfig} from 'next-intl/server';
- 
-export default getRequestConfig(async ({locale}) => {
-  // Validate that the incoming `locale` parameter is valid
-  if (!['en', 'ru', 'kk'].includes(locale as any)) locale = 'ru';
- 
+import { getRequestConfig } from 'next-intl/server';
+
+export default getRequestConfig(async ({ requestLocale }) => {
+  const locales = ['en', 'ru', 'kk'];
+  const defaultLocale = 'ru';
+
+  let locale = await requestLocale;
+  if (!locale || !locales.includes(locale)) {
+    locale = defaultLocale;
+  }
+
+  const messages = (await import(`../messages/${locale}.json`)).default;
+
   return {
-    messages: (await import(`../messages/${locale}.json`)).default
+    locale,
+    messages,
   };
 });

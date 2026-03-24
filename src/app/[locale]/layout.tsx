@@ -2,17 +2,25 @@ import '../globals.css';
 import { AuthProvider } from '@/context/auth-context';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/header';
-import {NextIntlClientProvider} from 'next-intl';
-import {getMessages} from 'next-intl/server';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages } from 'next-intl/server';
 import AIChat from '@/ai/aichat';
+import { notFound } from 'next/navigation';
 
 export default async function RootLayout({
   children,
-  params: {locale}
-}: Readonly<{
+  params,
+}: {
   children: React.ReactNode;
-  params: {locale: string};
-}>) {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
+  const locales = ['en', 'ru', 'kk'];
+  if (!locales.includes(locale)) {
+    notFound();
+  }
+
   const messages = await getMessages();
 
   return (

@@ -8,8 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslations } from 'next-intl';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
-import { useSearchParams } from 'next/navigation';
-import { useRouter, usePathname } from '@/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 function AuthTabs() {
   const t = useTranslations('Auth');
@@ -17,7 +16,6 @@ function AuthTabs() {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Активная вкладка всегда определяется из URL
   const activeTab = searchParams.get('tab') === 'login' ? 'login' : 'register';
 
   const handleTabChange = (value: string) => {

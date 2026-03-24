@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useChat, type UIMessage } from '@ai-sdk/react';
+import { DefaultChatTransport } from 'ai';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -15,8 +16,15 @@ export default function AIChat() {
   const [isOpen, setIsOpen] = useState(false);
   const { userData } = useAuth();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [input, setInput] = useState('');
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
+  const { messages, sendMessage, status } = useChat({
+    transport: new DefaultChatTransport({
+      api: '/api/chat',
+    }),
+  });
+
+  const isLoading = status === 'submitted' || status === 'streaming';
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -27,11 +35,25 @@ export default function AIChat() {
   const getInitials = (name?: string | null) => 
     name ? name.charAt(0).toUpperCase() : 'U';
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!input.trim() || isLoading) return;
+    
+    await sendMessage({ text: input });
+    setInput('');
+  };
+
+  const getMessageText = (message: UIMessage): string => {
+    const textPart = message.parts.find(part => part.type === 'text');
+    return textPart && 'text' in textPart ? textPart.text : '';
+  };
+
   if (!isOpen) {
     return (
       <Button
         id="ai-chat-trigger"
-        className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-xl bg-gradient-to-br from-violet-600 to-purple-700 z-[100] hover:scale-105 hover:shadow-violet-500/25 transition-all duration-300 group"
+        className="fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-xl bg-gradient-to-br from-violet-600 to-purple-700 z-[100] hover:scale-105 transition-all duration-300 group"
         onClick={() => setIsOpen(true)}
         aria-label="Открыть AI ассистент"
       >
@@ -40,11 +62,6 @@ export default function AIChat() {
       </Button>
     );
   }
-
-  const getMessageText = (message: UIMessage): string => {
-    const textPart = message.parts.find(part => part.type === 'text');
-    return textPart && 'text' in textPart ? textPart.text : '';
-  };
 
   return (
     <Card className="fixed bottom-6 right-6 w-[380px] h-[520px] shadow-2xl rounded-2xl bg-zinc-950/95 backdrop-blur-xl border border-zinc-800 flex flex-col overflow-hidden z-[100] animate-in slide-in-from-bottom-4 fade-in duration-200">
@@ -156,7 +173,7 @@ export default function AIChat() {
         >
           <Input
             value={input}
-            onChange={handleInputChange}
+            onChange={(e) => setInput(e.target.value)}
             placeholder="Напиши сообщение..."
             className="flex-1 bg-zinc-800/50 border-zinc-700 focus-visible:ring-violet-500/50 focus-visible:border-violet-500 text-white placeholder:text-zinc-500 h-9 text-sm"
             autoComplete="off"
