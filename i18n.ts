@@ -1,9 +1,18 @@
-import {getRequestConfig} from 'next-intl/server';
+import { getRequestConfig } from 'next-intl/server';
 
-export default getRequestConfig(async ({locale}) => {
-  // This will be validated by the middleware, so we don't need to check it here.
+export default getRequestConfig(async ({ locale }) => {
+  // Доступные локали
+  const locales = ['en', 'ru', 'kk'];
+  const defaultLocale = 'ru';
+
+  // Если locale не определён или не входит в список, используем defaultLocale
+  if (!locales.includes(locale as any)) {
+    locale = defaultLocale;
+  }
+
   return {
     locale,
-    messages: (await import(`./src/messages/${locale}.json`)).default
+    // Укажите правильный путь к файлам переводов
+    messages: (await import(`./src/messages/${locale}.json`)).default,
   };
 });

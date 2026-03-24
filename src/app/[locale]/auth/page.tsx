@@ -16,20 +16,16 @@ function AuthTabs() {
   const router = useRouter();
   const pathname = usePathname();
 
-  // The active tab is now derived directly from the URL search parameters.
-  // This is the single source of truth.
+  // Активная вкладка всегда определяется из URL
   const activeTab = searchParams.get('tab') === 'login' ? 'login' : 'register';
 
   const handleTabChange = (value: string) => {
-    // The handler now only needs to update the URL. The component will
-    // automatically re-render with the correct state from the new URL params.
     const params = new URLSearchParams(searchParams.toString());
     params.set('tab', value);
-    router.replace(`${pathname}?${params.toString()}`, {scroll: false});
+    router.replace(`${pathname}?${params.toString()}`);
   };
 
   return (
-    // Removed redundant z-index and relative positioning.
     <div className="w-full max-w-md">
       <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="grid w-full grid-cols-2">
