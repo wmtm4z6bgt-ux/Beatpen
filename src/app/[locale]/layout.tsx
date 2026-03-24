@@ -1,24 +1,20 @@
-import type { Metadata } from 'next';
+'use client';
 import '../globals.css';
 import { AuthProvider } from '@/context/auth-context';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/header';
-import {NextIntlClientProvider, useMessages} from 'next-intl';
+import {NextIntlClientProvider} from 'next-intl';
+import { getMessages } from 'next-intl/server';
 import AIChat from '@/ai/aichat';
 
-export const metadata: Metadata = {
-  title: 'BEATPEN - Feel the beat. Lead the line.',
-  description: 'Find a job without stressing. Download your portfolio, and start working now.',
-};
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
   params: {locale}
 }: Readonly<{
   children: React.ReactNode;
   params: {locale: string};
 }>) {
-  const messages = useMessages();
+  const messages = await getMessages();
 
   return (
     <html lang={locale} className="dark">

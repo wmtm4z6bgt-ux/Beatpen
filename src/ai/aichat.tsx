@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useChat, type UIMessage } from '@ai-sdk/react';
-import { DefaultChatTransport } from 'ai';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -16,15 +15,8 @@ export default function AIChat() {
   const [isOpen, setIsOpen] = useState(false);
   const { userData } = useAuth();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [input, setInput] = useState('');
 
-  const { messages, sendMessage, status } = useChat({
-    transport: new DefaultChatTransport({
-      api: '/api/chat',
-    }),
-  });
-
-  const isLoading = status === 'submitted' || status === 'streaming';
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -34,15 +26,6 @@ export default function AIChat() {
 
   const getInitials = (name?: string | null) => 
     name ? name.charAt(0).toUpperCase() : 'U';
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (!input.trim() || isLoading) return;
-    
-    await sendMessage({ text: input });
-    setInput('');
-  };
 
   // Кнопка открытия чата
   if (!isOpen) {
@@ -181,7 +164,7 @@ export default function AIChat() {
         >
           <Input
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={handleInputChange}
             placeholder="Напиши сообщение..."
             className="flex-1 bg-zinc-800/50 border-zinc-700 focus-visible:ring-violet-500/50 focus-visible:border-violet-500 text-white placeholder:text-zinc-500 h-9 text-sm"
             autoComplete="off"
