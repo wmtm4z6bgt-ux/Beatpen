@@ -6,18 +6,30 @@ import LoginForm from '@/components/auth/login-form';
 import RegisterForm from '@/components/auth/register-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslations } from 'next-intl';
-import { useSearchParams } from 'next/navigation';
-import { useRouter, usePathname } from '@/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
-
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 function AuthTabs() {
     const t = useTranslations('Auth');
-    const [tab, setTab] = useState<'login' | 'register'>('register');
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const pathname = usePathname();
 
+    const tParam = searchParams.get('tab');
+    const initialTab: 'login' | 'register' = tParam === 'login' ? 'login' : 'register';
+    const [tab, setTab] = useState<'login' | 'register'>(initialTab);
+
+    const handleTabChange = (value: string) => {
+        const val = value as 'login' | 'register';
+        setTab(val);
+        
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('tab', val);
+        router.replace(`${pathname}?${params.toString()}`);
+    };
     return (
-        <div className="w-full max-w-md">
-            <Tabs value={tab} onValueChange={(v) => setTab(v as 'login' | 'register')}>
+        <div className="relative z-10 w-full max-w-md">
+            <Tabs value={tab} onValueChange={handleTabChange}>
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="login">{t('login')}</TabsTrigger>
                     <TabsTrigger value="register">{t('register')}</TabsTrigger>
@@ -34,7 +46,6 @@ function AuthTabs() {
         </div>
     );
 }
-
 function AuthSkeleton() {
     return (
         <div className="w-full max-w-md space-y-4">

@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useChat, type UseChatHelpers } from '@ai-sdk/react';
+// Импортируем тип Message для устранения ошибки Generic
+import { useChat, type Message } from '@ai-sdk/react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
@@ -15,22 +16,22 @@ export default function AIChat() {
   const [isOpen, setIsOpen] = useState(false);
   const { userData } = useAuth();
 
-  // The 'api' property is deprecated. useChat defaults to '/api/chat'.
-  const { messages, input, handleInputChange, handleSubmit, isLoading }: UseChatHelpers = useChat();
+  // ИСПРАВЛЕНИЕ: Передаем <Message> в UseChatHelpers
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat();
   
   const getInitials = (name?: string | null) => name ? name.charAt(0).toUpperCase() : 'U';
 
-
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    handleSubmit(); // 
+    e.stopPropagation(); // Блокируем всплытие события к Tabs
+    handleSubmit(e);
   };
-  
+
   if (!isOpen) {
     return (
       <Button
         id="ai-chat-toggle-button"
-        className="fixed bottom-6 right-6 rounded-full w-16 h-16 shadow-lg bg-gradient-to-r from-violet-500 to-purple-500"
+        className="fixed bottom-6 right-6 rounded-full w-16 h-16 shadow-lg bg-gradient-to-r from-violet-500 to-purple-500 z-50"
         onClick={() => setIsOpen(true)}
       >
         <Bot className="h-8 w-8 text-white" />
@@ -39,7 +40,7 @@ export default function AIChat() {
   }
 
   return (
-    <Card className="fixed bottom-6 right-6 w-96 h-[600px] shadow-2xl rounded-2xl bg-black/50 backdrop-blur-lg border-violet-500/20 flex flex-col overflow-hidden z-50">
+    <Card className="fixed bottom-6 right-6 w-96 h-[600px] shadow-2xl rounded-2xl bg-black/50 backdrop-blur-lg border-violet-500/20 flex flex-col overflow-hidden z-[100]">
       <CardHeader className="flex flex-row justify-between items-center p-4 border-b border-white/10">
         <div className="flex items-center gap-2">
           <Bot className="h-6 w-6 text-violet-400" />
@@ -59,7 +60,7 @@ export default function AIChat() {
               </div>
             )}
 
-            {messages.map((m: any) => (
+            {messages.map((m: Message) => (
               <div key={m.id} className={cn('flex gap-3', m.role === 'user' ? 'justify-end' : 'justify-start')}>
                 {m.role === 'assistant' && (
                   <Avatar className="h-8 w-8">
@@ -98,25 +99,29 @@ export default function AIChat() {
       </CardContent>
 
       <CardFooter className="p-4 border-t border-white/10">
-        <form className="flex w-full gap-2 items-center" onSubmit={handleFormSubmit}>
+        <form 
+          className="flex w-full gap-2 items-center" 
+          onSubmit={handleFormSubmit}
+          onKeyDown={(e) => e.stopPropagation()} // Изолируем нажатия клавиш
+        >
           <Input
             id="chat-input-isolated"
             value={input}
             onChange={handleInputChange}
             placeholder="Ask the assistant..."
-            className="bg-zinc-800 border-zinc-700 focus:ring-violet-500"
+            className="bg-zinc-800 border-zinc-700 focus:ring-violet-500 text-white"
+            autoComplete="off"
           />
-         <Button
-  id="chat-submit-isolated"
-  type="button"
-  onClick={() => handleSubmit()}
-  disabled={isLoading}
->
-  <Send className="h-4 w-4" />
-</Button>
+          <Button 
+            id="chat-submit-isolated" 
+            type="submit" 
+            disabled={isLoading || !input.trim()}
+            className="bg-violet-500 hover:bg-violet-600"
+          >
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          </Button>
         </form>
       </CardFooter>
     </Card>
   );
 }
-<form className="flex w-full gap-2 items-center"></form>
