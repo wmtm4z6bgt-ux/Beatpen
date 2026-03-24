@@ -20,11 +20,11 @@ export default function AIChat() {
   
   const getInitials = (name?: string | null) => name ? name.charAt(0).toUpperCase() : 'U';
 
-  // The handleSubmit from useChat already handles e.preventDefault()
+
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); 
     handleSubmit(e);
   };
-
   
   if (!isOpen) {
     return (
