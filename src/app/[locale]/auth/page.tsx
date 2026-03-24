@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { Suspense } from 'react';
 import AuthLayout from '@/components/auth/auth-layout';
 import LoginForm from '@/components/auth/login-form';
 import RegisterForm from '@/components/auth/register-form';
@@ -9,73 +9,76 @@ import { useTranslations } from 'next-intl';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card } from '@/components/ui/card';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+
 function AuthTabs() {
-    const t = useTranslations('Auth');
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const pathname = usePathname();
+  const t = useTranslations('Auth');
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
-    const tParam = searchParams.get('tab');
-    const initialTab: 'login' | 'register' = tParam === 'login' ? 'login' : 'register';
-    const [tab, setTab] = useState<'login' | 'register'>(initialTab);
+  // The active tab is now derived directly from the URL search parameters.
+  // This is the single source of truth.
+  const activeTab = searchParams.get('tab') === 'login' ? 'login' : 'register';
 
-    const handleTabChange = (value: string) => {
-        const val = value as 'login' | 'register';
-        setTab(val);
-        
-        const params = new URLSearchParams(searchParams.toString());
-        params.set('tab', val);
-        router.replace(`${pathname}?${params.toString()}`);
-    };
-    return (
-        <div className="relative z-10 w-full max-w-md">
-            <Tabs value={tab} onValueChange={handleTabChange}>
-                <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="login">{t('login')}</TabsTrigger>
-                    <TabsTrigger value="register">{t('register')}</TabsTrigger>
-                </TabsList>
+  const handleTabChange = (value: string) => {
+    // The handler now only needs to update the URL. The component will
+    // automatically re-render with the correct state from the new URL params.
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', value);
+    router.replace(`${pathname}?${params.toString()}`, {scroll: false});
+  };
 
-                <TabsContent value="login">
-                    <LoginForm />
-                </TabsContent>
+  return (
+    // Removed redundant z-index and relative positioning.
+    <div className="w-full max-w-md">
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="login">{t('login')}</TabsTrigger>
+          <TabsTrigger value="register">{t('register')}</TabsTrigger>
+        </TabsList>
 
-                <TabsContent value="register">
-                    <RegisterForm />
-                </TabsContent>
-            </Tabs>
-        </div>
-    );
+        <TabsContent value="login">
+          <LoginForm />
+        </TabsContent>
+
+        <TabsContent value="register">
+          <RegisterForm />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
 }
+
 function AuthSkeleton() {
-    return (
-        <div className="w-full max-w-md space-y-4">
-            <div className="grid grid-cols-2 gap-2 p-1 bg-muted rounded-lg mb-4">
-                <Skeleton className="h-9" />
-                <Skeleton className="h-9" />
-            </div>
-            <Card>
-                <div className="p-6 space-y-6">
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-1/4" />
-                        <Skeleton className="h-10 w-full" />
-                    </div>
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-1/4" />
-                        <Skeleton className="h-10 w-full" />
-                    </div>
-                    <Skeleton className="h-10 w-full" />
-                </div>
-            </Card>
+  return (
+    <div className="w-full max-w-md space-y-4">
+      <div className="grid grid-cols-2 gap-2 p-1 bg-muted rounded-lg mb-4">
+        <Skeleton className="h-9" />
+        <Skeleton className="h-9" />
+      </div>
+      <Card>
+        <div className="p-6 space-y-6">
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-1/4" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-1/4" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          <Skeleton className="h-10 w-full" />
         </div>
-    );
+      </Card>
+    </div>
+  );
 }
 
 export default function AuthPage() {
-    return (
-        <AuthLayout>
-            <Suspense fallback={<AuthSkeleton />}>
-                <AuthTabs />
-            </Suspense>
-        </AuthLayout>
-    );
+  return (
+    <AuthLayout>
+      <Suspense fallback={<AuthSkeleton />}>
+        <AuthTabs />
+      </Suspense>
+    </AuthLayout>
+  );
 }
