@@ -1,11 +1,11 @@
 'use client';
 
+import { useState, Suspense } from 'react';
 import AuthLayout from '@/components/auth/auth-layout';
 import LoginForm from '@/components/auth/login-form';
 import RegisterForm from '@/components/auth/register-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslations } from 'next-intl';
-import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter, usePathname } from '@/navigation';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -13,25 +13,20 @@ import { Card } from '@/components/ui/card';
 
 function AuthTabs() {
     const t = useTranslations('Auth');
-    const router = useRouter();
-    const pathname = usePathname();
-    const searchParams = useSearchParams();
-    const tab = searchParams.get('tab') || 'login';
-
-    const onTabChange = (value: string) => {
-        router.replace(`${pathname}?tab=${value}`);
-    };
+    const [tab, setTab] = useState<'login' | 'register'>('register');
 
     return (
         <div className="w-full max-w-md">
-            <Tabs value={tab} onValueChange={onTabChange}>
+            <Tabs value={tab} onValueChange={(v) => setTab(v as 'login' | 'register')}>
                 <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="login">{t('login')}</TabsTrigger>
                     <TabsTrigger value="register">{t('register')}</TabsTrigger>
                 </TabsList>
+
                 <TabsContent value="login">
                     <LoginForm />
                 </TabsContent>
+
                 <TabsContent value="register">
                     <RegisterForm />
                 </TabsContent>
@@ -63,7 +58,6 @@ function AuthSkeleton() {
         </div>
     );
 }
-
 
 export default function AuthPage() {
     return (

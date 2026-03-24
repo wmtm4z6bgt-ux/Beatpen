@@ -22,8 +22,8 @@ export default function AIChat() {
 
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); 
-    handleSubmit(e);
+    e.preventDefault();
+    handleSubmit(); // 
   };
   
   if (!isOpen) {
@@ -106,11 +106,17 @@ export default function AIChat() {
             placeholder="Ask the assistant..."
             className="bg-zinc-800 border-zinc-700 focus:ring-violet-500"
           />
-          <Button id="chat-submit-isolated" type="submit" disabled={isLoading}>
-            <Send className="h-4 w-4" />
-          </Button>
+         <Button
+  id="chat-submit-isolated"
+  type="button"
+  onClick={() => handleSubmit()}
+  disabled={isLoading}
+>
+  <Send className="h-4 w-4" />
+</Button>
         </form>
       </CardFooter>
     </Card>
   );
 }
+<form className="flex w-full gap-2 items-center"></form>
