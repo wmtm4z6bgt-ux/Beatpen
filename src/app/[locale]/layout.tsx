@@ -1,4 +1,3 @@
-'use client';
 import '../globals.css';
 import { AuthProvider } from '@/context/auth-context';
 import { Toaster } from '@/components/ui/toaster';
