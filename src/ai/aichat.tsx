@@ -27,7 +27,6 @@ export default function AIChat() {
   const getInitials = (name?: string | null) => 
     name ? name.charAt(0).toUpperCase() : 'U';
 
-  // Кнопка открытия чата
   if (!isOpen) {
     return (
       <Button
@@ -42,7 +41,6 @@ export default function AIChat() {
     );
   }
 
-  // Функция для извлечения текста из частей сообщения
   const getMessageText = (message: UIMessage): string => {
     const textPart = message.parts.find(part => part.type === 'text');
     return textPart && 'text' in textPart ? textPart.text : '';
@@ -50,7 +48,6 @@ export default function AIChat() {
 
   return (
     <Card className="fixed bottom-6 right-6 w-[380px] h-[520px] shadow-2xl rounded-2xl bg-zinc-950/95 backdrop-blur-xl border border-zinc-800 flex flex-col overflow-hidden z-[100] animate-in slide-in-from-bottom-4 fade-in duration-200">
-      {/* Заголовок */}
       <CardHeader className="flex flex-row items-center justify-between px-4 py-3 border-b border-zinc-800 bg-zinc-900/50">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-violet-600/20">
@@ -74,11 +71,9 @@ export default function AIChat() {
         </Button>
       </CardHeader>
 
-      {/* Сообщения */}
       <CardContent className="p-0 flex-1 overflow-hidden">
         <ScrollArea className="h-full w-full">
           <div className="p-4 space-y-3">
-            {/* Приветствие */}
             {messages.length === 0 && !isLoading && (
               <div className="text-center py-8 px-4">
                 <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-violet-600/20 flex items-center justify-center">
@@ -91,7 +86,6 @@ export default function AIChat() {
               </div>
             )}
 
-            {/* Список сообщений */}
             {messages.map((m: UIMessage) => (
               <div 
                 key={m.id} 
@@ -132,7 +126,6 @@ export default function AIChat() {
               </div>
             ))}
 
-            {/* Индикатор загрузки */}
             {isLoading && (
               <div className="flex gap-2.5 justify-start">
                 <Avatar className="h-7 w-7">
@@ -155,7 +148,6 @@ export default function AIChat() {
         </ScrollArea>
       </CardContent>
 
-      {/* Поле ввода */}
       <CardFooter className="p-3 border-t border-zinc-800 bg-zinc-900/50">
         <form
           className="flex w-full gap-2 items-center"

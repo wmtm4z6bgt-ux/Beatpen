@@ -3,7 +3,7 @@ import { AuthProvider } from '@/context/auth-context';
 import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/header';
 import {NextIntlClientProvider} from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import {getMessages} from 'next-intl/server';
 import AIChat from '@/ai/aichat';
 
 export default async function RootLayout({
